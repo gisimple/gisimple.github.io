@@ -5,9 +5,13 @@ module.exports = function(grunt){
     copy: {
       build: {
         cwd: 'src',
-        src: ['**', '!**/*.styl'],
+        src: ['**', '!**/*.less'],
         dest: 'build',
         expand: true
+      },
+      deploy: {
+        src: ['dist/index.html'],
+        dest: './index.html'
       }
     },
     clean: {
@@ -18,30 +22,14 @@ module.exports = function(grunt){
         src: ['dist']
       }
     },
-    stylus: {
-      build: {
-        options: {
-          linenos: true,
-          compress: false
-        },
-        files: [{
-          expand: true,
-          cwd: 'src',
-          src: [ '**/*.styl' ],
-          dest: 'build',
-          ext: '.css'
-        }]
-      }
-    },
     autoprefixer: {
       options: {
           browsers: ['last 2 version', 'ie 8', 'ie 9'],
           cascade: true
       },
       build: {
-        expand: true,
-        cwd: 'build/css/',
-        src: [ '**/*.css', '!**/*.min.css' ]
+        src: 'build/css/index.css',
+        dest: 'build/css/index.css'
       }
     },
     uglify: {
@@ -159,11 +147,11 @@ module.exports = function(grunt){
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-less');
 
-  grunt.registerTask('build-init', ['clean', 'copy']);
+  grunt.registerTask('build-init', ['clean', 'copy:build']);
   grunt.registerTask('styles', ['less', 'autoprefixer', 'cssmin']);
   grunt.registerTask('scripts', ['jshint', 'uglify']);
   grunt.registerTask('build', ['build-init','styles','scripts','jade']);
-  grunt.registerTask('dist', ['build', 'inline']);
+  grunt.registerTask('dist', ['build', 'inline', 'copy:deploy']);
   grunt.registerTask('default', ['dist']);
   grunt.registerTask('dev', ['dist', 'connect', 'watch']);
 };
