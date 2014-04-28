@@ -3,4 +3,4 @@ gisimple.github.io
 
 GISimple Website
 
-[gisimple.github.io](gisimple.github.io)
+[http://gisimple.github.io/](http://gisimple.github.io/)
