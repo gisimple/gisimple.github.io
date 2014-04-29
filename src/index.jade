@@ -6,7 +6,6 @@ html(lang="en")
     meta(name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no")
     //-link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css')
     link(rel='stylesheet', href='css/index#{dotmin}.css?__inline=true')
-    script(type='text/javascript', src='js/index#{dotmin}.js?__inline=true')
 
     |<!--[if lt IE 9]>
     |<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -18,21 +17,57 @@ html(lang="en")
       .site-wrapper-inner
         .cover-container
           .masthead.clearfix
+            //-.inner.navbar-fixed-top
             .inner
-              h3.masthead-brand GISimple
-              ul.nav.masthead-nav
-                li(href='#home').active home
-                li(href='#services') services
-                li(href='#stories') stories
-                li(href='#contact') contact
-        .inner.cover
-          h1.cover-heading Awesome Heading
-          p.lead A homepage lead about how awesome our services are and how much you really really need them
-          p.lead
-            a(href='#services').btn.btn-lg.btn-default Learn More
+              h3.masthead-brand
+                a(href='/') GISimple
+              ul#nav.nav.masthead-nav
+                li.current
+                  a(href='#home').active home
+                li
+                  a(href='#showcase') showcase
+                li
+                  a(href='#services') services
+                li
+                  a(href='#stories') stories
+                li
+                  a(href='#contact') contact
+        #home.section-wrapper.row
+          .inner.cover.section
+            h1.cover-heading Awesome Heading
+            p.lead A homepage lead about how awesome our services are and how much you really really need them
+            p.lead
+              a(href='#services').btn.btn-lg.btn-default Learn More
+    #showcase.section-wrapper.row
+      .section
+        .col-md-7
+          h1 col-md-7 h1 Better get a stiff neck from aiming too high than a hunch from aiming too low.
+        .col-md-5
+          h3 col-md-5 h3 Eliminate something superfluous from your life.
+    #services.section-wrapper.row
+      .section
+        .col-md-4
+          h3 col-md-4 h3 First we form habits
+        .col-md-4
+          h3 col-md-4 h3 then they form us
+        .col-md-4
+          h3 col-md-4 h3 Break a habit.
+    #stories.section-wrapper.row
+      .col-md-7
+        h2 col-md-7 h2 Do something that makes you feel insecure.
+      .col-md-5
+        h2 col-md-5 h2 It is never too late to be what you might have been.
+    #contact.section-wrapper.row
+      .col-md-7
+        h2 col-md-7 h2 Quit now, you will never make it.
+      .col-md-5
+        h2 col-md-5 h2 If you disregard this advice, you will be halfway there.
 
-    //-script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+    script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js')
     //-script(type='text/javascript', src= '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js')
     script(type='text/javascript',
       src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js')
+    script(type='text/javascript', src='js/index#{dotmin}.js?__inline=true')
+    script(type='text/javascript', src='js/jquery.inview#{dotmin}.js?__inline=true')
+    script(type='text/javascript', src='js/jquery.onepagenav#{dotmin}.js?__inline=true')
 
