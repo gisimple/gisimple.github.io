@@ -38,6 +38,7 @@ module.exports = function(grunt){
         files: {
           'build/js/logo.min.js': ['build/js/logo.js'],
           'build/js/index.min.js': ['build/js/index.js'],
+          'build/js/landing_chart.min.js': ['build/js/landing_chart.js'],
           'build/js/jquery.inview.min.js': ['build/js/jquery.inview.js'],
           'build/js/jquery.onepagenav.min.js': ['build/js/jquery.onepagenav.js']
         }
