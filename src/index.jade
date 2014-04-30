@@ -13,61 +13,106 @@ html(lang="en")
     |<![endif]-->
 
   body
-    .site-wrapper
-      .site-wrapper-inner
-        .cover-container
-          .masthead.clearfix
-            //-.inner.navbar-fixed-top
-            .inner
-              h3.masthead-brand
-                a(href='/') GISimple
-              ul#nav.nav.masthead-nav
-                li.current
-                  a(href='#home').active home
-                li
-                  a(href='#showcase') showcase
-                li
-                  a(href='#services') services
-                li
-                  a(href='#stories') stories
-                li
-                  a(href='#contact') contact
-        #home.section-wrapper.row
-          .inner.cover.section
-            h1.cover-heading Awesome Heading
-            p.lead A homepage lead about how awesome our services are and how much you really really need them
-            p.lead
-              a(href='#services').btn.btn-lg.btn-default Learn More
-    #showcase.section-wrapper.row
-      .section
-        .col-md-7
-          h1 col-md-7 h1 Better get a stiff neck from aiming too high than a hunch from aiming too low.
-        .col-md-5
-          h3 col-md-5 h3 Eliminate something superfluous from your life.
-    #services.section-wrapper.row
-      .section
-        .col-md-4
-          h3 col-md-4 h3 First we form habits
-        .col-md-4
-          h3 col-md-4 h3 then they form us
-        .col-md-4
-          h3 col-md-4 h3 Break a habit.
-    #stories.section-wrapper.row
-      .col-md-7
-        h2 col-md-7 h2 Do something that makes you feel insecure.
-      .col-md-5
-        h2 col-md-5 h2 It is never too late to be what you might have been.
-    #contact.section-wrapper.row
-      .col-md-7
-        h2 col-md-7 h2 Quit now, you will never make it.
-      .col-md-5
-        h2 col-md-5 h2 If you disregard this advice, you will be halfway there.
+    nav(role='navigation').navbar.navbar-custom.navbar-fixed-top.top-nav-collapse
+      .container
+        .navbar-header.page-scroll
+          button.navbar-toggle //- not done here
+            i.fa.fa-bars
+          a(href='/').company GISimple
+        .collapse.navbar-collapse.navbar-right.navbar-main-collapse
+          ul.nav.navbar-nav
+            li
+              a(href='#welcome') welcome
+            li
+              a(href='#showcase') showcase
+            li
+              a(href='#services') services
+            li
+              a(href='#testimonials') testimonials
+            li
+              a(href='#blog') blog
+            li
+              a(href='#contact') contact
+    section#head
+      .container.hero
+        .row
+          .col-md-9.col-md-offset-1
+            .row
+              .col-md-5.hidden-sm.hidden-xs
+                img(src='http://themes.createbrilliance.com/Trype/theme/img/iphone-small-white.png').img-responsive.center-block
+              .col-md-7
+                h1 GENIUS.
+                br
+                h1 SMART.
+                br
+                h1 LOVELY.
+                h2 You'll Love It.
+    section#welcome
+      .row
+        .container
+          .col-md-3.hidden-sm.hidden-xs.pad-top
+            .info-box.visible
+              .icon.brand-color.visible
+                i.fa.fa-heart
+              .content
+                h3 Beautiful Design
+                p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            .info-box.visible
+              .icon.brand-color.visible
+                i.fa.fa-heart
+              .content
+                h3 Fully Responsive
+                p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
+          .col-md-6.col-sm-12.pad-top
+            h2.text-center UNBELIEVABLE
+            p Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+
+          .col-md-3.hidden-sm.hidden-xs.pad-top
+            .info-box.visible
+              .icon.brand-color.visible
+                i.fa.fa-heart
+              .content
+                h3 Beautiful Design
+                p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            .info-box.visible
+              .icon.brand-color.visible
+                i.fa.fa-heart
+              .content
+                h3 Fully Responsive
+                p Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+    section#showcase
+      .container.hero
+        .row
+          h1 Showcase
+        .row-padding
+    section#services
+      .container.hero
+        .row
+          h1 Services
+        .row-padding
+    section#testimonials
+      .container.hero
+        .row
+          h1 Testimonials
+        .row-padding
+    section#blog
+      .container.hero
+        .row
+          h1 Blog
+        .row-padding
+    section#contact
+      .container.hero
+        .row
+          h1 Contact
+        .row-padding
     script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js')
     //-script(type='text/javascript', src= '//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js')
-    script(type='text/javascript',
-      src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js')
+    script(type='text/javascript', src='//cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js')
+    script(type='text/javascript', src='js/jquery.scrollTo.min.js?__inline=true')
+    script(type='text/javascript', src='js/jquery.localScroll.min.js?__inline=true')
+    //-script(type='text/javascript', src='js/jquery.inview#{dotmin}.js?__inline=true')
+    //-script(type='text/javascript', src='js/jquery.onepagenav#{dotmin}.js?__inline=true')
     script(type='text/javascript', src='js/index#{dotmin}.js?__inline=true')
-    script(type='text/javascript', src='js/jquery.inview#{dotmin}.js?__inline=true')
-    script(type='text/javascript', src='js/jquery.onepagenav#{dotmin}.js?__inline=true')
 

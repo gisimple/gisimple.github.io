@@ -1,0 +1,257 @@
+@import 'reset.css';
+/*@import '../../stylesheets/demo.css';*/
+@import 'src/css/grid.less';
+
+//////////
+// GRID //
+//////////
+
+// Specify the number of columns and set column and gutter widths
+@columns: 12;
+@column-width: 60;
+@gutter-width: 20;
+
+// Remove the definition below for a pixel-based layout
+@total-width: 100%;
+
+
+// BootStrap Vars
+
+@gray-darker:            lighten(#000, 13.5%); // #222
+@gray-dark:              lighten(#000, 20%);   // #333
+@gray:                   lighten(#000, 33.5%); // #555
+@gray-light:             lighten(#000, 60%);   // #999
+@gray-lighter:           lighten(#000, 93.5%); // #eee
+
+@brand-primary:         red; //#428bca;
+@brand-success:         #5cb85c;
+@brand-info:            #5bc0de;
+@brand-warning:         #f0ad4e;
+@brand-danger:          #d9534f;
+
+
+//== Scaffolding
+//
+//## Settings for some of the most global styles.
+
+//** Background color for `<body>`.
+@body-bg:               transparent;
+//** Global text color on `<body>`.
+@text-color:            @gray-dark;
+
+//** Global textual link color.
+@link-color:            @brand-primary;
+//** Link hover color set via `darken()` function.
+@link-hover-color:      darken(@link-color, 15%);
+
+
+//== Typography
+//
+//## Font, line-height, and color for body text, headings, and more.
+
+@font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-serif:       Georgia, "Times New Roman", Times, serif;
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+@font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace;
+@font-family-base:        @font-family-sans-serif;
+
+@font-size-base:          14px;
+@font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
+@font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
+
+@font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
+@font-size-h2:            floor((@font-size-base * 2.15)); // ~30px
+@font-size-h3:            ceil((@font-size-base * 1.7)); // ~24px
+@font-size-h4:            ceil((@font-size-base * 1.25)); // ~18px
+@font-size-h5:            @font-size-base;
+@font-size-h6:            ceil((@font-size-base * 0.85)); // ~12px
+
+
+h1,h2,h3,h4,h5,h6{
+  margin:0 0 25px 0;
+  line-height:110%;
+  color:#222;
+  font-family: 'Oswald', @font-family-sans-serif;
+  font-weight:400;
+}
+
+h1{
+  font-size:28px;
+  line-height:46px;
+}
+
+h2{
+  font-size:22px;
+  line-height:32px;
+}
+
+h3{
+  font-size:18px;
+  line-height:28px;
+}
+
+h4{
+  font-size:16px;
+  line-height:24px;
+}
+
+h5{
+  font-size:14px;
+  line-height:22px;
+  text-transform:uppercase;
+}
+
+h6{
+  font-size:12px;
+  line-height:18px;
+  text-transform:uppercase;
+}
+
+.uppercase{
+  text-transform:uppercase;
+}
+
+.italic{
+  font-style:italic;
+}
+
+.small_margins{
+  margin-bottom:15px;
+}
+
+.padding_right{
+  padding-right:25px;
+}
+
+.padding_top{
+  padding-top:25px;
+}
+
+.padding_top_large{
+  padding-top:40px;
+}
+
+.padding_bottom{
+  padding-bottom:30px;
+}
+
+.white{
+  color:#fff;
+}
+
+.grey{
+  color:#28323c;
+}
+
+
+#container {
+  height: auto;
+  /*margin: 0;*/
+  /*padding: 0;*/
+  /*border: 0;*/
+  /*outline: 0;*/
+  /*font-size: 100%;*/
+}
+
+#intro {
+  background: url(http://webdesignpro09.info/tf-14-landing/lib/images/0.jpg);
+  width: 100%;
+  z-index: 1;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  padding:0;
+}
+
+#sticky_wrapper {
+  height: 89px;
+}
+
+#header_wrapper {
+  position: fixed;
+  width: 100%;
+  padding-top: 30px;
+  background-color: transparent;
+  z-index: 9999;
+  /*top: 0;*/
+}
+
+#header {
+  width: 100%;
+  max-width: 1170px;
+  margin: 0 auto;
+}
+
+#header .row {
+  overflow: inherit;
+}
+
+a#logo {
+  .column(5);
+  float: left;
+  margin: 25px 0 0 0;
+  z-index: 900;
+  font-family: 'Pacifico', @font-family-sans-serif;
+  font-size: 26px;
+  line-height: 26px;
+  /*color: #dcdcdc;*/
+  color: red;
+
+}
+
+#nav {
+  .column(7);
+  margin: 0;
+  float:right;
+  position: relative
+}
+
+#nav li {
+  display: inline-block;
+  position: relative;
+  margin: 31px 14px 0 14px;
+}
+
+#nav li.last {
+  margin-right: 0;
+}
+
+section {
+  display: block;
+}
+
+.section_wrapper {
+  .row(12);
+  display: block;
+  background-color: transparent;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  padding: 145px 0 195px 0;
+}
+
+#home{
+  width:100%;
+  position:relative;
+  z-index:10;
+  padding:145px 0 195px 0;
+}
+
+.home_box{
+  width:100%;
+  max-width:870px;
+  margin:0 auto;
+  text-align:center;
+}
+
+/*
+
+
+
+*/
+
+
+
+
+

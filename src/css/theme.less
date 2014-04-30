@@ -1,9 +1,6 @@
 // Core variables and mixins
 @import "variables.less";
 
-@body-bg: #428bca ;
-
-
 @import "bootstrap/mixins.less";
 
 // Reset and dependencies
@@ -44,182 +41,492 @@
 /*@import "bootstrap/close.less";*/
 
 // Components w/ JavaScript
-/*@import "bootstrap/modals.less";*/
-/*@import "bootstrap/tooltip.less";*/
-/*@import "bootstrap/popovers.less";*/
-/*@import "bootstrap/carousel.less";*/
+@import "bootstrap/modals.less";
+@import "bootstrap/tooltip.less";
+@import "bootstrap/popovers.less";
+@import "bootstrap/carousel.less";
 
 // Utility classes
 @import "bootstrap/utilities.less";
 @import "bootstrap/responsive-utilities.less";
 
-/*
- * Globals
- */
 
-/* Links */
-a,
-a:focus,
-a:hover {
-  color: #fff;
-}
+@gray-darker:            lighten(#000, 13.5%); // #222
+@gray-dark:              lighten(#000, 20%);   // #333
+@gray:                   lighten(#000, 33.5%); // #555
+@gray-light:             lighten(#000, 60%);   // #999
+@gray-lighter:           lighten(#000, 93.5%); // #eee
 
-/* Custom default button */
-.btn-default,
-.btn-default:hover,
-.btn-default:focus {
-  color: #333;
-  text-shadow: none; /* Prevent inheritence from `body` */
-  background-color: #fff;
-  border: 1px solid #fff;
-}
+@brand-primary:         red; //#428bca;
+@brand-success:         #5cb85c;
+@brand-info:            #5bc0de;
+@brand-warning:         #f0ad4e;
+@brand-danger:          #d9534f;
 
 
-/*
- * Base structure
- */
+//== Scaffolding
+//
+//## Settings for some of the most global styles.
 
-html,
-body {
-  height: 100%;
-  background-color: #333;
-}
-body {
-  color: #fff;
-  text-align: center;
-  text-shadow: 0 1px 3px rgba(0,0,0,.5);
-  box-shadow: inset 0 0 100px rgba(0,0,0,.5);
-}
+//** Background color for `<body>`.
+@body-bg:               transparent;
+/*@body-bg: #428bca ;*/
+//** Global text color on `<body>`.
+@text-color:  #7E8385;  //           @gray-dark;
+@heading-color: #676767;
 
-/* Extra markup and styles for table-esque vertical and horizontal centering */
-.site-wrapper {
-  display: table;
-  width: 100%;
-  height: 100%; /* For at least Firefox */
-  min-height: 100%;
-}
-.site-wrapper-inner {
-  display: table-cell;
-  vertical-align: top;
-}
-.cover-container {
-  margin-right: auto;
-  margin-left: auto;
-}
-
-/* Padding for spacing */
-.inner {
-  padding: 30px;
-}
-
-.section-wrapper {
-  margin-top: -80px;
-  padding-top: 80px;
-}
-
-.section-wrapper:first-child .section {
-  padding-top: 160px;
-}
+//** Global textual link color.
+@link-color:            @brand-primary;
+//** Link hover color set via `darken()` function.
+@link-hover-color:      darken(@link-color, 15%);
 
 
-/*
- * Header
- */
-.masthead-brand {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
+//== Typography
+//
+//## Font, line-height, and color for body text, headings, and more.
 
-.masthead-nav > li {
+@font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-serif:       Georgia, "Times New Roman", Times, serif;
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+@font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace;
+@font-family-base:        @font-family-sans-serif;
+
+@font-size-base:          14px;
+@font-size-large:         ceil((@font-size-base * 1.25)); // ~18px
+@font-size-small:         ceil((@font-size-base * 0.85)); // ~12px
+
+@font-size-h1:            floor((@font-size-base * 2.6)); // ~36px
+@font-size-h2:            floor((@font-size-base * 2.15)); // ~30px
+@font-size-h3:            ceil((@font-size-base * 1.7)); // ~24px
+@font-size-h4:            ceil((@font-size-base * 1.25)); // ~18px
+@font-size-h5:            @font-size-base;
+@font-size-h6:            ceil((@font-size-base * 0.85)); // ~12px
+
+@heading-font:  "Open Sans", @font-family-sans-serif;
+
+
+
+.vcenter {
   display: inline-block;
+  vertical-align: middle;
+  float: none;
 }
-.masthead-nav > li + li {
-  margin-left: 20px;
+.hcenter {
+  width: 100%;
+  margin:0 auto;
+  text-align: center;
 }
-.masthead-nav > li > a {
-  padding-right: 0;
-  padding-left: 0;
+
+.pad-top { padding-top: 50px; }
+
+
+/********* GENERAL ************/
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background:url(http://themes.createbrilliance.com/Trype/theme/img/dark_wall.png) repeat;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  color: @text-color;
+  font-size:15px;
+  line-height: 2;
+  /*overflow-x: hidden !important;*/
+  margin: 0px;
+  overflow: visible;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  color: @heading-color;
+  font-family: @heading-font;
+  font-weight: 400;
+}
+.light{
+  font-weight:100;
+}
+
+h1{
+  font-weight:100;
+}
+h3{
+  font-weight:400;
+}
+
+hr{
+  margin-top:25px;
+  margin-bottom:25px;
+}
+
+a {
+color: #beccd0;
+       text-decoration: none;
+       -webkit-transition: color 0.5s ease 0s;
+       -moz-transition: color 0.5s ease 0s;
+       -o-transition: color 0.5s ease 0s;
+transition: color 0.5s ease 0s;
+}
+a:hover, a:focus {
+color: #a2afb3;
+       text-decoration: underline;
+  }
+a:focus {
+outline: thin dotted #333333;
+         outline-offset: -2px;
+  }
+
+/*
+ * BUTTONS
+ */
+
+.btn-default {
+  font-weight: 700;
+background: none;
+            border-radius: 3px;
+border:3px solid white;
+       padding-left:20px;
+       padding-right:20px;
+       padding-top:10px;
+       padding-bottom:10px;
+color: white;
+       text-transform: uppercase;
+       -webkit-transition: all 0.5s ease 0s;
+       -moz-transition: all 0.5s ease 0s;
+       -o-transition: all 0.5s ease 0s;
+transition: all 0.5s ease 0s;
+}
+
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default {
+  background-color: #2F3238;
+  border-color: #2F3238;
+color: white !important;
+opacity: 1;
+}
+
+
+
+.company{
+  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 25px;
+  padding-top: 10px;
+}
+
+
+
+
+/*
+ * navbar
+ */
+
+.navbar {
+  border:0px;
+  text-transform: uppercase;
+  font-family: "Muli","Helvetica Neue",Helvetica,Arial,sans-serif;
+  background-color: none;
+  opacity:0.96;
+  color:white;
+}
+
+.navbar .company {
+  color: black;
+  display: block;
+  padding-left: 15px;
+  transition: all 1s ease-in-out;
+}
+
+.top-nav-collapse .company {
+  padding-top: 15px;
+}
+
+.navbar-nav > li > a,
+.navbar-nav .dropdown-menu > li > a {
+  color:white;
+  font-size:10px;
+}
+
+.navbar-nav .caret {
+  border-bottom-color: white;
+  border-top-color: white;
+  -webkit-transition: all 1s ease-in-out;
+  -moz-transition: all 1s ease-in-out;
+transition: all 1s ease-in-out;
+}
+
+.nav a:hover .caret{
+  border-bottom-color: white;
+  border-top-color: white;
+}
+
+.navbar-nav .dropdown-menu{
+  font-family: "Muli","Helvetica Neue",Helvetica,Arial,sans-serif;
+opacity:0.96;
+color:white;
+      box-shadow:none;
+background:none;
+border:none;
+left:0;
+}
+
+
+.navbar-custom .nav li a {
+  -webkit-transition: all 1s ease-in-out;
+  -moz-transition: all 1s ease-in-out;
+transition: all 1s ease-in-out;
+}
+
+
+.navbar-custom .nav li a:hover, 
+.navbar-custom .nav li a:focus, 
+.navbar-custom .nav li.active {
+  outline: 0;
+  font-weight:bold;
+  background:none;
+}
+
+.navbar-toggle {
+  padding: 4px 6px;
   font-size: 16px;
-  font-weight: bold;
-  color: #fff; /* IE8 proofing */
-  color: rgba(255,255,255,.75);
-  border-bottom: 2px solid transparent;
-}
-.masthead-nav > li > a:hover,
-.masthead-nav > li > a:focus {
-  background-color: transparent;
-  border-bottom-color: rgba(255,255,255,.25);
-}
-.masthead-nav > .active > a,
-.masthead-nav > .active > a:hover,
-.masthead-nav > .active > a:focus {
   color: #fff;
-  border-bottom-color: #fff;
 }
 
-@media (min-width: 768px) {
-  .masthead-brand {
-    float: left;
+.navbar-toggle:focus, .navbar-toggle:active {
+  outline: 0;
+}
+
+
+/*small version */
+.top-nav-collapse{
+  color:black;
+}
+.top-nav-collapse .company{
+  padding-top:15px;
+}
+.top-nav-collapse .navbar-nav > li > a,
+  .top-nav-collapse .navbar-nav .dropdown-menu > li > a {
+color:black !important;
   }
-  .masthead-nav {
-    float: right;
-  }
+
+.top-nav-collapse .navbar-nav .dropdown-menu {
+  background-color: #F9F9F9 !important;
+  border-bottom: 1px solid #f2f2f2 !important;
+  transition: background .5s ease-in-out,padding .5s ease-in-out;
+
+}
+.top-nav-collapse .caret {
+  border-bottom-color: black !important;
+  border-top-color: black !important;
+}
+.top-nav-collapse .navbar-toggle{
+color:black !important;
+}
+
+.navbar {
+padding: 20px 0;
+         letter-spacing: 1px;
+background: none;
+            -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
+            -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
+transition: background .5s ease-in-out,padding .5s ease-in-out;
+}
+
+.top-nav-collapse {
+padding: 0;
+         background-color: #F9F9F9;
+         border-bottom: 1px solid #f2f2f2;
+}
+
+
+
+/*
+ * second version with static-background
+ */
+
+.navbar.static-background{
+  background-color: white;
+  color:black;
+}
+.navbar.static-background .company{
+  color:black;
+}
+.navbar.static-background .navbar-nav > li > a,.navbar.static-background .navbar-nav .dropdown-menu > li > a {
+  color:black;
+}
+.navbar.static-background .navbar-nav .caret {
+  border-bottom-color:black;
+  border-top-color:black;
+}
+.navbar.static-background .navbar-nav .dropdown-menu{
+  background:white;
+}
+
+/**********************************
+ * SECTIONS
+ * sections are further ordered by page
+ *********************************/
+
+/*general styles*/
+
+section {
+        -webkit-backface-visibility: hidden;
+        padding-top: 100px;
+        padding-bottom: 100px;
+        background:white;
+        position:relative;
+        z-index:3;
+}
+section:nth-child(even) {
+        background: #ECECEC;
+}
+
+.pageHead{
+        padding-top:150px;
+        padding-bottom:150px;
+        color:white;
+        margin-bottom:100px;
+        position:relative;
+        top:0;
+}
+.pageHead h1{
+        font-weight: 800;
+        text-transform:uppercase;
+        font-size:80px;
+        line-height:80px;
+        color:white;
+        margin-bottom:0px;
+}
+.pageHead h3{
+        margin-top:0px;
+        color:white;
+}
+.pageHead .hero{
+        margin-bottom:0;
+}
+
+.hero{
+        text-align:center;
+        margin-bottom:100px;
+}
+.hero h2{
+        font-weight:100;
+        font-size:35px;
+        line-height:35px;
+}
+.hero p{
+        font-weight:100;
+        padding-left:10%;
+        padding-right:10%;
+        font-size:20px;
+        line-height: 1.5;
+}
+
+.hero.left{
+        padding-bottom:10px;
+        text-align:left;
+        margin-bottom:0px;
+}
+.hero.left p{
+        padding-left:0px;
+        padding-right:10px;
 }
 
 
 /*
- * Cover
- */
+ * 
+ * HOME
+ * 
+ * 
+*/
 
-.cover {
-  padding: 0 20px;
+
+#head{
+        background:none;
+        width:100%;
+        height:100%;
+        color:white;
+
 }
-.cover .btn-lg {
-  padding: 10px 20px;
-  font-weight: bold;
+
+#head{
+        padding-bottom:0px;
 }
+
+#head .hero{
+        margin-top:100px;
+        position:absolute;
+        text-align:center;
+        width:100%;
+
+}
+#head .hero.contrast h1,#head .hero.contrast h3{
+        text-shadow: 0px 0px 2px rgba(150, 150, 150, 0.8);
+}
+#head .row.align-bottom{
+        position:absolute;
+        margin:0 auto;
+        width:100%;
+        bottom:0;
+}
+
+#head .hero h1{
+        font-weight:800;
+        text-transform:uppercase;
+        font-size:60px; 
+        color:white;
+        margin-bottom:0px;
+}
+#head .hero h3{
+        font-weight:100;
+        color:white;
+        margin-top:0px;
+}
+#head .container {
+        z-index: 3;
+        position: relative;
+}
+
+/*
+ * preloader
+ *
+ */
+#preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        color: #222;
+        z-index: 9999;
+}
+#preloader #spinner_container {
+        width: 193px;
+        margin: 250px auto;
+        text-align: center;
+}
+
 
 
 /*
- * Footer
+ * HELPER
  */
-
-.mastfoot {
-  color: #999; /* IE8 proofing */
-  color: rgba(255,255,255,.5);
+.row-padding{
+        margin-bottom:100px;
 }
-
+.center-block{
+        margin:0 auto;
+}
+hr.not-visible{
+        border-top:none;
+}
 
 /*
- * Affix and center
+ * animation helper
  */
-
-@media (min-width: 768px) {
-  /* Pull out the header and footer */
-  .masthead {
-    position: fixed;
-    top: 0;
-  }
-  .mastfoot {
-    position: fixed;
-    bottom: 0;
-  }
-  /* Start the vertical centering */
-  .site-wrapper-inner {
-    vertical-align: middle;
-  }
-  /* Handle the widths */
-  .masthead,
-  .mastfoot,
-  .cover-container {
-    width: 100%; /* Must be percentage or pixels for horizontal alignment */
-  }
+.animated {
+  visibility: hidden;
 }
-
-@media (min-width: 992px) {
-  .masthead,
-  .mastfoot,
-  .cover-container {
-    width: 700px;
-  }
+.visible {
+  visibility: visible;
 }
