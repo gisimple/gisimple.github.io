@@ -1,40 +1,127 @@
 (function() {
   'use strict';
 
-var width = $('#landing-chart').parent().width(),
-    height = $('#landing-chart').parent().width(),
-    radius = Math.min(width, height) / 2;
+var w = $('#landing-chart').parent().width(),
+    h = w,
+    r = w / 2,
+    x = d3.scale.linear().range([0, 2 * Math.PI]),
+    y = d3.scale.sqrt().range([0, r]),
+    color = d3.scale.category20b(),
+    padding = 0
+;
 
-var x = d3.scale.linear()
-      .range([0, 2 * Math.PI]);
+var data = dataGen();
+//console.log(JSON.stringify(data));
 
-var y = d3.scale.sqrt()
-      .range([0, radius]);
+var div = d3.select('#landing-chart');
 
-var color = d3.scale.category20c();
-
-var svg = d3.select('#landing-chart').append('svg')
-  .attr('width', width)
-  .attr('height', height)
-  .append('g')
-  .attr('transform', 'translate(' + width / 2 + ',' + (height / 2 + 10) + ')');
-
-var partition = d3.layout.partition()
-                .value(function(d) { return d.size; });
+var svg = div.append('svg')
+    .attr('width', w)
+    .attr('height', h)
+    .append('g')
+    .attr('transform', 'translate(' + w / 2 + ',' + (h / 2) + ')')
+    //.attr('transform', 'rotate (90)')
+    ;
 
 var arc = d3.svg.arc()
-        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-        .innerRadius(function(d) { return Math.max(0, y(d.y)); })
-        .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+    .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+    .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+    .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+    .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
 
-var root = flare();
-var path = svg.selectAll('path')
-          .data(partition.nodes(root))
-          .enter().append('path')
-          .attr('d', arc)
-          .style('fill', function(d) { return color((d.children ? d : d.parent).name); })
-          .on('click', click);
+// diagram type
+var partition = d3.layout.partition();
+    //.size([2 * Math.PI, r]) // defaults to 1x1
+    //.value(function(d) { return d.size; }); // defaults to d.value (numeric)
+
+var nodes = partition.nodes(data);
+
+var path = svg.selectAll('path').data(nodes);
+path.enter().append('path')
+  .attr('id', function(d,i){return 'path-' + i;})
+  .attr('d', arc)
+  //.attr('fill-rule', 'evenodd')
+  .style('fill', function(d) { return color((d.children ? d : d.parent).name); })
+  .attr('display', function(d) { return d.depth ? null : 'none'; }) // hide inner
+  //.attr('fill', color(d))
+  //.attr('stroke', 'white')
+  .on('click', click)
+  ;
+
+/*
+var text = svg.selectAll('text').data(nodes);
+var textEnter = text.enter().append('text')
+    .style('fill-opacity', 1)
+    .style('fill', function(d) {
+      return 'white';
+      //return brightness(d3.rgb(colour(d))) < 125 ? '#eee' : '#000';
+    })
+    .attr('text-anchor', function(d) {
+      return x(d.x + d.dx / 2) > Math.PI ? 'end' : 'start';
+    })
+    .attr('dy', '0.1em')
+    .attr('transform', function(d) {
+      var multiline = (d.name || '').split(' ').length > 1,
+          angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
+          rotate = angle + (multiline ? -0.5 : 0);
+      return 'rotate(' + rotate + ')translate(' + (y(d.y) + padding) + ')rotate(' + (angle > 90 ? -180 : 0) + ')';
+    })
+    .on('click', click);
+
+textEnter.append('tspan')
+  .attr('x', 0)
+  .text(function(d) { return d.depth ? d.name.split(' ')[0] : ''; });
+textEnter.append('tspan')
+  .attr('x', 0)
+  .attr('dy', '1em')
+  .text(function(d) { return d.depth ? d.name.split(' ')[1] || '' : ''; });
+*/
+
+//var groups = mainGroup.data(getData())
+    //.selectAll('path')
+    //.data(partition.nodes)
+    //.enter().append('svg:g')
+    //;
+
+
+
+//var group = mainGroup.selectAll('path')
+    //.data(partition.nodes(getData()))
+    //.enter().append('g')
+    //;
+
+//var group = svg.data(getData())
+    //.selectAll('path')
+    //.data(partition.nodes)
+    //.enter().append('g');
+
+//var path = groups.append('svg:path')
+    //.attr('d', arc)
+    //.style('fill', function(d) { return color((d.children ? d : d.parent).name); })
+    //.attr('display', function(d) { return d.depth ? null : 'none'; }) // hide inner
+    //.each(stash)
+    ////.on('click', click)
+    //;
+
+//var path = svg.selectAll('path')
+  //.data(partition.nodes(getData()))
+  //.enter().append('path')
+  //.attr('d', arc)
+  //.style('fill', function(d) { return color((d.children ? d : d.parent).name); })
+  //.on('click', click);
+
+//group.append('text')
+    //.attr('text-anchor', function(d) {
+      //return d.x + d.dx / 2 > Math.PI ? 'end' : 'start';
+    //})
+    //.attr('transform', function(d) {
+      //var angle = (d.x + d.dx / 2) * 180 / Math.PI - 90;
+      //if (angle > 90) { angle = angle - 180; }
+      //return 'rotate(' + angle + ')translate(' + (d.y  + 100)  + ')rotate(' + (angle > 90 ? -180 : 0) + ')';
+    //})
+    //.attr('dy', '.35em')  //vertical-align
+    //.attr('display', function(d) { return d.depth ? null : 'none'; })  //hide inner
+    //.text(function(d) { return d.name; });
 
 function click(d) {
   path.transition()
@@ -42,402 +129,1098 @@ function click(d) {
     .attrTween('d', arcTween(d));
 }
 
+//function stash(d) {
+  //d.x0 = d.x;
+  //d.dx0 = d.dx;
+//}
+
 //d3.select(self.frameElement).style('height', height + 'px');
 
 // Interpolate the scales!
 function arcTween(d) {
   var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
       yd = d3.interpolate(y.domain(), [d.y, 1]),
-      yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+      yr = d3.interpolate(y.range(), [d.y ? 20 : 0, r]);
   return function(d, i) {
     return i ? function(t) { return arc(d); }
              : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
   };
 }
 
-function flare() {
-  /* jshint quotmark:false */
+function dataGen() {
+  /* jshint quotmark:false*/
   return {
-    "name": "flare",
+  "name": "root",
+  "children": [
+    {
+      "name": 100,
       "children": [
-      {
-        "name": "analytics",
-        "children": [
         {
-          "name": "cluster",
+          "name": 101,
           "children": [
-          {"name": "AgglomerativeCluster", "size": 3938},
-          {"name": "CommunityStructure", "size": 3812},
-          {"name": "HierarchicalCluster", "size": 6714},
-          {"name": "MergeEdge", "size": 743}
+            {
+              "name": 102,
+              "value": 212
+            },
+            {
+              "name": 103,
+              "value": 220
+            }
           ]
         },
         {
-          "name": "graph",
+          "name": 104,
           "children": [
-          {"name": "BetweennessCentrality", "size": 3534},
-          {"name": "LinkDistance", "size": 5731},
-          {"name": "MaxFlowMinCut", "size": 7840},
-          {"name": "ShortestPaths", "size": 5914},
-          {"name": "SpanningTree", "size": 3416}
+            {
+              "name": 105,
+              "value": 116
+            },
+            {
+              "name": 106,
+              "value": 216
+            },
+            {
+              "name": 107,
+              "value": 162
+            }
           ]
         },
         {
-          "name": "optimization",
+          "name": 108,
           "children": [
-          {"name": "AspectRatioBanker", "size": 7074}
+            {
+              "name": 109,
+              "value": 210
+            },
+            {
+              "name": 110,
+              "value": 282
+            },
+            {
+              "name": 111,
+              "value": 292
+            }
+          ]
+        },
+        {
+          "name": 112,
+          "children": [
+            {
+              "name": 113,
+              "value": 129
+            },
+            {
+              "name": 114,
+              "value": 270
+            },
+            {
+              "name": 115,
+              "value": 251
+            }
           ]
         }
-        ]
-      },
-      {
-        "name": "animate",
-        "children": [
-        {"name": "Easing", "size": 17010},
-        {"name": "FunctionSequence", "size": 5842},
+      ]
+    },
+    {
+      "name": 116,
+      "children": [
         {
-          "name": "interpolate",
+          "name": 117,
           "children": [
-          {"name": "ArrayInterpolator", "size": 1983},
-          {"name": "ColorInterpolator", "size": 2047},
-          {"name": "DateInterpolator", "size": 1375},
-          {"name": "Interpolator", "size": 8746},
-          {"name": "MatrixInterpolator", "size": 2202},
-          {"name": "NumberInterpolator", "size": 1382},
-          {"name": "ObjectInterpolator", "size": 1629},
-          {"name": "PointInterpolator", "size": 1675},
-          {"name": "RectangleInterpolator", "size": 2042}
-          ]
-        },
-        {"name": "ISchedulable", "size": 1041},
-        {"name": "Parallel", "size": 5176},
-        {"name": "Pause", "size": 449},
-        {"name": "Scheduler", "size": 5593},
-        {"name": "Sequence", "size": 5534},
-        {"name": "Transition", "size": 9201},
-        {"name": "Transitioner", "size": 19975},
-        {"name": "TransitionEvent", "size": 1116},
-        {"name": "Tween", "size": 6006}
-        ]
-      },
-      {
-        "name": "data",
-        "children": [
-        {
-          "name": "converters",
-          "children": [
-          {"name": "Converters", "size": 721},
-          {"name": "DelimitedTextConverter", "size": 4294},
-          {"name": "GraphMLConverter", "size": 9800},
-          {"name": "IDataConverter", "size": 1314},
-          {"name": "JSONConverter", "size": 2220}
-          ]
-        },
-        {"name": "DataField", "size": 1759},
-        {"name": "DataSchema", "size": 2165},
-        {"name": "DataSet", "size": 586},
-        {"name": "DataSource", "size": 3331},
-        {"name": "DataTable", "size": 772},
-        {"name": "DataUtil", "size": 3322}
-        ]
-      },
-      {
-        "name": "display",
-        "children": [
-        {"name": "DirtySprite", "size": 8833},
-        {"name": "LineSprite", "size": 1732},
-        {"name": "RectSprite", "size": 3623},
-        {"name": "TextSprite", "size": 10066}
-        ]
-      },
-      {
-        "name": "flex",
-        "children": [
-        {"name": "FlareVis", "size": 4116}
-        ]
-      },
-      {
-        "name": "physics",
-        "children": [
-        {"name": "DragForce", "size": 1082},
-        {"name": "GravityForce", "size": 1336},
-        {"name": "IForce", "size": 319},
-        {"name": "NBodyForce", "size": 10498},
-        {"name": "Particle", "size": 2822},
-        {"name": "Simulation", "size": 9983},
-        {"name": "Spring", "size": 2213},
-        {"name": "SpringForce", "size": 1681}
-        ]
-      },
-      {
-        "name": "query",
-        "children": [
-        {"name": "AggregateExpression", "size": 1616},
-        {"name": "And", "size": 1027},
-        {"name": "Arithmetic", "size": 3891},
-        {"name": "Average", "size": 891},
-        {"name": "BinaryExpression", "size": 2893},
-        {"name": "Comparison", "size": 5103},
-        {"name": "CompositeExpression", "size": 3677},
-        {"name": "Count", "size": 781},
-        {"name": "DateUtil", "size": 4141},
-        {"name": "Distinct", "size": 933},
-        {"name": "Expression", "size": 5130},
-        {"name": "ExpressionIterator", "size": 3617},
-        {"name": "Fn", "size": 3240},
-        {"name": "If", "size": 2732},
-        {"name": "IsA", "size": 2039},
-        {"name": "Literal", "size": 1214},
-        {"name": "Match", "size": 3748},
-        {"name": "Maximum", "size": 843},
-        {
-          "name": "methods",
-          "children": [
-          {"name": "add", "size": 593},
-          {"name": "and", "size": 330},
-          {"name": "average", "size": 287},
-          {"name": "count", "size": 277},
-          {"name": "distinct", "size": 292},
-          {"name": "div", "size": 595},
-          {"name": "eq", "size": 594},
-          {"name": "fn", "size": 460},
-          {"name": "gt", "size": 603},
-          {"name": "gte", "size": 625},
-          {"name": "iff", "size": 748},
-          {"name": "isa", "size": 461},
-          {"name": "lt", "size": 597},
-          {"name": "lte", "size": 619},
-          {"name": "max", "size": 283},
-          {"name": "min", "size": 283},
-          {"name": "mod", "size": 591},
-          {"name": "mul", "size": 603},
-          {"name": "neq", "size": 599},
-          {"name": "not", "size": 386},
-          {"name": "or", "size": 323},
-          {"name": "orderby", "size": 307},
-          {"name": "range", "size": 772},
-          {"name": "select", "size": 296},
-          {"name": "stddev", "size": 363},
-          {"name": "sub", "size": 600},
-          {"name": "sum", "size": 280},
-          {"name": "update", "size": 307},
-          {"name": "variance", "size": 335},
-          {"name": "where", "size": 299},
-          {"name": "xor", "size": 354},
-          {"name": "_", "size": 264}
-          ]
-        },
-        {"name": "Minimum", "size": 843},
-        {"name": "Not", "size": 1554},
-        {"name": "Or", "size": 970},
-        {"name": "Query", "size": 13896},
-        {"name": "Range", "size": 1594},
-        {"name": "StringUtil", "size": 4130},
-        {"name": "Sum", "size": 791},
-        {"name": "Variable", "size": 1124},
-        {"name": "Variance", "size": 1876},
-        {"name": "Xor", "size": 1101}
-        ]
-      },
-      {
-        "name": "scale",
-        "children": [
-        {"name": "IScaleMap", "size": 2105},
-        {"name": "LinearScale", "size": 1316},
-        {"name": "LogScale", "size": 3151},
-        {"name": "OrdinalScale", "size": 3770},
-        {"name": "QuantileScale", "size": 2435},
-        {"name": "QuantitativeScale", "size": 4839},
-        {"name": "RootScale", "size": 1756},
-        {"name": "Scale", "size": 4268},
-        {"name": "ScaleType", "size": 1821},
-        {"name": "TimeScale", "size": 5833}
-        ]
-      },
-      {
-        "name": "util",
-        "children": [
-        {"name": "Arrays", "size": 8258},
-        {"name": "Colors", "size": 10001},
-        {"name": "Dates", "size": 8217},
-        {"name": "Displays", "size": 12555},
-        {"name": "Filter", "size": 2324},
-        {"name": "Geometry", "size": 10993},
-        {
-          "name": "heap",
-          "children": [
-          {"name": "FibonacciHeap", "size": 9354},
-          {"name": "HeapNode", "size": 1233}
-          ]
-        },
-        {"name": "IEvaluable", "size": 335},
-        {"name": "IPredicate", "size": 383},
-        {"name": "IValueProxy", "size": 874},
-        {
-          "name": "math",
-          "children": [
-          {"name": "DenseMatrix", "size": 3165},
-          {"name": "IMatrix", "size": 2815},
-          {"name": "SparseMatrix", "size": 3366}
-          ]
-        },
-        {"name": "Maths", "size": 17705},
-        {"name": "Orientation", "size": 1486},
-        {
-          "name": "palette",
-          "children": [
-          {"name": "ColorPalette", "size": 6367},
-          {"name": "Palette", "size": 1229},
-          {"name": "ShapePalette", "size": 2059},
-          {"name": "SizePalette", "size": 2291}
-          ]
-        },
-        {"name": "Property", "size": 5559},
-        {"name": "Shapes", "size": 19118},
-        {"name": "Sort", "size": 6887},
-        {"name": "Stats", "size": 6557},
-        {"name": "Strings", "size": 22026}
-        ]
-      },
-      {
-        "name": "vis",
-        "children": [
-        {
-          "name": "axis",
-          "children": [
-          {"name": "Axes", "size": 1302},
-          {"name": "Axis", "size": 24593},
-          {"name": "AxisGridLine", "size": 652},
-          {"name": "AxisLabel", "size": 636},
-          {"name": "CartesianAxes", "size": 6703}
+            {
+              "name": 118,
+              "value": 231
+            },
+            {
+              "name": 119,
+              "value": 234
+            }
           ]
         },
         {
-          "name": "controls",
+          "name": 120,
           "children": [
-          {"name": "AnchorControl", "size": 2138},
-          {"name": "ClickControl", "size": 3824},
-          {"name": "Control", "size": 1353},
-          {"name": "ControlList", "size": 4665},
-          {"name": "DragControl", "size": 2649},
-          {"name": "ExpandControl", "size": 2832},
-          {"name": "HoverControl", "size": 4896},
-          {"name": "IControl", "size": 763},
-          {"name": "PanZoomControl", "size": 5222},
-          {"name": "SelectionControl", "size": 7862},
-          {"name": "TooltipControl", "size": 8435}
+            {
+              "name": 121,
+              "value": 212
+            },
+            {
+              "name": 122,
+              "value": 236
+            },
+            {
+              "name": 123,
+              "value": 24
+            }
           ]
         },
         {
-          "name": "data",
+          "name": 124,
           "children": [
-          {"name": "Data", "size": 20544},
-          {"name": "DataList", "size": 19788},
-          {"name": "DataSprite", "size": 10349},
-          {"name": "EdgeSprite", "size": 3301},
-          {"name": "NodeSprite", "size": 19382},
-          {
-            "name": "render",
-            "children": [
-            {"name": "ArrowType", "size": 698},
-            {"name": "EdgeRenderer", "size": 5569},
-            {"name": "IRenderer", "size": 353},
-            {"name": "ShapeRenderer", "size": 2247}
-            ]
-          },
-          {"name": "ScaleBinding", "size": 11275},
-          {"name": "Tree", "size": 7147},
-          {"name": "TreeBuilder", "size": 9930}
+            {
+              "name": 125,
+              "value": 234
+            },
+            {
+              "name": 126,
+              "value": 254
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 127,
+      "children": [
+        {
+          "name": 128,
+          "children": [
+            {
+              "name": 129,
+              "value": 137
+            },
+            {
+              "name": 130,
+              "value": 40
+            }
           ]
         },
         {
-          "name": "events",
+          "name": 131,
           "children": [
-          {"name": "DataEvent", "size": 2313},
-          {"name": "SelectionEvent", "size": 1880},
-          {"name": "TooltipEvent", "size": 1701},
-          {"name": "VisualizationEvent", "size": 1117}
+            {
+              "name": 132,
+              "value": 60
+            },
+            {
+              "name": 133,
+              "value": 232
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 134,
+      "children": [
+        {
+          "name": 135,
+          "children": [
+            {
+              "name": 136,
+              "value": 84
+            },
+            {
+              "name": 137,
+              "value": 94
+            },
+            {
+              "name": 138,
+              "value": 158
+            }
           ]
         },
         {
-          "name": "legend",
+          "name": 139,
           "children": [
-          {"name": "Legend", "size": 20859},
-          {"name": "LegendItem", "size": 4614},
-          {"name": "LegendRange", "size": 10530}
+            {
+              "name": 140,
+              "value": 255
+            },
+            {
+              "name": 141,
+              "value": 155
+            }
           ]
         },
         {
-          "name": "operator",
+          "name": 142,
           "children": [
-          {
-            "name": "distortion",
-            "children": [
-            {"name": "BifocalDistortion", "size": 4461},
-            {"name": "Distortion", "size": 6314},
-            {"name": "FisheyeDistortion", "size": 3444}
-            ]
-          },
-          {
-            "name": "encoder",
-            "children": [
-            {"name": "ColorEncoder", "size": 3179},
-            {"name": "Encoder", "size": 4060},
-            {"name": "PropertyEncoder", "size": 4138},
-            {"name": "ShapeEncoder", "size": 1690},
-            {"name": "SizeEncoder", "size": 1830}
-            ]
-          },
-          {
-            "name": "filter",
-            "children": [
-            {"name": "FisheyeTreeFilter", "size": 5219},
-            {"name": "GraphDistanceFilter", "size": 3165},
-            {"name": "VisibilityFilter", "size": 3509}
-            ]
-          },
-          {"name": "IOperator", "size": 1286},
-          {
-            "name": "label",
-            "children": [
-            {"name": "Labeler", "size": 9956},
-            {"name": "RadialLabeler", "size": 3899},
-            {"name": "StackedAreaLabeler", "size": 3202}
-            ]
-          },
-          {
-            "name": "layout",
-            "children": [
-            {"name": "AxisLayout", "size": 6725},
-            {"name": "BundledEdgeRouter", "size": 3727},
-            {"name": "CircleLayout", "size": 9317},
-            {"name": "CirclePackingLayout", "size": 12003},
-            {"name": "DendrogramLayout", "size": 4853},
-            {"name": "ForceDirectedLayout", "size": 8411},
-            {"name": "IcicleTreeLayout", "size": 4864},
-            {"name": "IndentedTreeLayout", "size": 3174},
-            {"name": "Layout", "size": 7881},
-            {"name": "NodeLinkTreeLayout", "size": 12870},
-            {"name": "PieLayout", "size": 2728},
-            {"name": "RadialTreeLayout", "size": 12348},
-            {"name": "RandomLayout", "size": 870},
-            {"name": "StackedAreaLayout", "size": 9121},
-            {"name": "TreeMapLayout", "size": 9191}
-            ]
-          },
-          {"name": "Operator", "size": 2490},
-          {"name": "OperatorList", "size": 5248},
-          {"name": "OperatorSequence", "size": 4190},
-          {"name": "OperatorSwitch", "size": 2581},
-          {"name": "SortOperator", "size": 2023}
+            {
+              "name": 143,
+              "value": 128
+            },
+            {
+              "name": 144,
+              "value": 129
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 145,
+      "children": [
+        {
+          "name": 146,
+          "children": [
+            {
+              "name": 147,
+              "value": 298
+            },
+            {
+              "name": 148,
+              "value": 235
+            }
           ]
         },
-        {"name": "Visualization", "size": 16540}
-        ]
-      }
-    ]
-  };
+        {
+          "name": 149,
+          "children": [
+            {
+              "name": 150,
+              "value": 167
+            },
+            {
+              "name": 151,
+              "value": 92
+            },
+            {
+              "name": 152,
+              "value": 258
+            }
+          ]
+        },
+        {
+          "name": 153,
+          "children": [
+            {
+              "name": 154,
+              "value": 241
+            },
+            {
+              "name": 155,
+              "value": 245
+            }
+          ]
+        },
+        {
+          "name": 156,
+          "children": [
+            {
+              "name": 157,
+              "value": 260
+            },
+            {
+              "name": 158,
+              "value": 21
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 159,
+      "children": [
+        {
+          "name": 160,
+          "children": [
+            {
+              "name": 161,
+              "value": 284
+            },
+            {
+              "name": 162,
+              "value": 193
+            },
+            {
+              "name": 163,
+              "value": 125
+            }
+          ]
+        },
+        {
+          "name": 164,
+          "children": [
+            {
+              "name": 165,
+              "value": 103
+            },
+            {
+              "name": 166,
+              "value": 90
+            },
+            {
+              "name": 167,
+              "value": 293
+            }
+          ]
+        },
+        {
+          "name": 168,
+          "children": [
+            {
+              "name": 169,
+              "value": 144
+            },
+            {
+              "name": 170,
+              "value": 71
+            }
+          ]
+        },
+        {
+          "name": 171,
+          "children": [
+            {
+              "name": 172,
+              "value": 114
+            },
+            {
+              "name": 173,
+              "value": 187
+            },
+            {
+              "name": 174,
+              "value": 168
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 175,
+      "children": [
+        {
+          "name": 176,
+          "children": [
+            {
+              "name": 177,
+              "value": 284
+            },
+            {
+              "name": 178,
+              "value": 226
+            },
+            {
+              "name": 179,
+              "value": 134
+            }
+          ]
+        },
+        {
+          "name": 180,
+          "children": [
+            {
+              "name": 181,
+              "value": 212
+            },
+            {
+              "name": 182,
+              "value": 33
+            },
+            {
+              "name": 183,
+              "value": 45
+            }
+          ]
+        },
+        {
+          "name": 184,
+          "children": [
+            {
+              "name": 185,
+              "value": 251
+            },
+            {
+              "name": 186,
+              "value": 187
+            },
+            {
+              "name": 187,
+              "value": 274
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 188,
+      "children": [
+        {
+          "name": 189,
+          "children": [
+            {
+              "name": 190,
+              "value": 197
+            },
+            {
+              "name": 191,
+              "value": 89
+            },
+            {
+              "name": 192,
+              "value": 52
+            }
+          ]
+        },
+        {
+          "name": 193,
+          "children": [
+            {
+              "name": 194,
+              "value": 29
+            },
+            {
+              "name": 195,
+              "value": 165
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 196,
+      "children": [
+        {
+          "name": 197,
+          "children": [
+            {
+              "name": 198,
+              "value": 242
+            },
+            {
+              "name": 199,
+              "value": 146
+            }
+          ]
+        },
+        {
+          "name": 200,
+          "children": [
+            {
+              "name": 201,
+              "value": 202
+            },
+            {
+              "name": 202,
+              "value": 271
+            },
+            {
+              "name": 203,
+              "value": 297
+            }
+          ]
+        },
+        {
+          "name": 204,
+          "children": [
+            {
+              "name": 205,
+              "value": 220
+            },
+            {
+              "name": 206,
+              "value": 286
+            },
+            {
+              "name": 207,
+              "value": 28
+            }
+          ]
+        },
+        {
+          "name": 208,
+          "children": [
+            {
+              "name": 209,
+              "value": 211
+            },
+            {
+              "name": 210,
+              "value": 179
+            },
+            {
+              "name": 211,
+              "value": 51
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 212,
+      "children": [
+        {
+          "name": 213,
+          "children": [
+            {
+              "name": 214,
+              "value": 190
+            },
+            {
+              "name": 215,
+              "value": 150
+            }
+          ]
+        },
+        {
+          "name": 216,
+          "children": [
+            {
+              "name": 217,
+              "value": 210
+            },
+            {
+              "name": 218,
+              "value": 31
+            },
+            {
+              "name": 219,
+              "value": 250
+            }
+          ]
+        },
+        {
+          "name": 220,
+          "children": [
+            {
+              "name": 221,
+              "value": 293
+            },
+            {
+              "name": 222,
+              "value": 115
+            },
+            {
+              "name": 223,
+              "value": 276
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 224,
+      "children": [
+        {
+          "name": 225,
+          "children": [
+            {
+              "name": 226,
+              "value": 67
+            },
+            {
+              "name": 227,
+              "value": 195
+            },
+            {
+              "name": 228,
+              "value": 160
+            }
+          ]
+        },
+        {
+          "name": 229,
+          "children": [
+            {
+              "name": 230,
+              "value": 292
+            },
+            {
+              "name": 231,
+              "value": 228
+            },
+            {
+              "name": 232,
+              "value": 55
+            }
+          ]
+        },
+        {
+          "name": 233,
+          "children": [
+            {
+              "name": 234,
+              "value": 130
+            },
+            {
+              "name": 235,
+              "value": 188
+            },
+            {
+              "name": 236,
+              "value": 23
+            }
+          ]
+        },
+        {
+          "name": 237,
+          "children": [
+            {
+              "name": 238,
+              "value": 193
+            },
+            {
+              "name": 239,
+              "value": 91
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 240,
+      "children": [
+        {
+          "name": 241,
+          "children": [
+            {
+              "name": 242,
+              "value": 206
+            },
+            {
+              "name": 243,
+              "value": 155
+            },
+            {
+              "name": 244,
+              "value": 171
+            }
+          ]
+        },
+        {
+          "name": 245,
+          "children": [
+            {
+              "name": 246,
+              "value": 106
+            },
+            {
+              "name": 247,
+              "value": 148
+            }
+          ]
+        },
+        {
+          "name": 248,
+          "children": [
+            {
+              "name": 249,
+              "value": 215
+            },
+            {
+              "name": 250,
+              "value": 104
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 251,
+      "children": [
+        {
+          "name": 252,
+          "children": [
+            {
+              "name": 253,
+              "value": 77
+            },
+            {
+              "name": 254,
+              "value": 230
+            },
+            {
+              "name": 255,
+              "value": 20
+            }
+          ]
+        },
+        {
+          "name": 256,
+          "children": [
+            {
+              "name": 257,
+              "value": 300
+            },
+            {
+              "name": 258,
+              "value": 280
+            }
+          ]
+        },
+        {
+          "name": 259,
+          "children": [
+            {
+              "name": 260,
+              "value": 220
+            },
+            {
+              "name": 261,
+              "value": 84
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 262,
+      "children": [
+        {
+          "name": 263,
+          "children": [
+            {
+              "name": 264,
+              "value": 114
+            },
+            {
+              "name": 265,
+              "value": 97
+            }
+          ]
+        },
+        {
+          "name": 266,
+          "children": [
+            {
+              "name": 267,
+              "value": 55
+            },
+            {
+              "name": 268,
+              "value": 55
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 269,
+      "children": [
+        {
+          "name": 270,
+          "children": [
+            {
+              "name": 271,
+              "value": 182
+            },
+            {
+              "name": 272,
+              "value": 89
+            },
+            {
+              "name": 273,
+              "value": 47
+            }
+          ]
+        },
+        {
+          "name": 274,
+          "children": [
+            {
+              "name": 275,
+              "value": 202
+            },
+            {
+              "name": 276,
+              "value": 109
+            }
+          ]
+        },
+        {
+          "name": 277,
+          "children": [
+            {
+              "name": 278,
+              "value": 57
+            },
+            {
+              "name": 279,
+              "value": 73
+            },
+            {
+              "name": 280,
+              "value": 255
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 281,
+      "children": [
+        {
+          "name": 282,
+          "children": [
+            {
+              "name": 283,
+              "value": 175
+            },
+            {
+              "name": 284,
+              "value": 44
+            }
+          ]
+        },
+        {
+          "name": 285,
+          "children": [
+            {
+              "name": 286,
+              "value": 235
+            },
+            {
+              "name": 287,
+              "value": 86
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 288,
+      "children": [
+        {
+          "name": 289,
+          "children": [
+            {
+              "name": 290,
+              "value": 269
+            },
+            {
+              "name": 291,
+              "value": 101
+            }
+          ]
+        },
+        {
+          "name": 292,
+          "children": [
+            {
+              "name": 293,
+              "value": 160
+            },
+            {
+              "name": 294,
+              "value": 80
+            },
+            {
+              "name": 295,
+              "value": 195
+            }
+          ]
+        },
+        {
+          "name": 296,
+          "children": [
+            {
+              "name": 297,
+              "value": 108
+            },
+            {
+              "name": 298,
+              "value": 136
+            },
+            {
+              "name": 299,
+              "value": 20
+            }
+          ]
+        },
+        {
+          "name": 300,
+          "children": [
+            {
+              "name": 301,
+              "value": 147
+            },
+            {
+              "name": 302,
+              "value": 162
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 303,
+      "children": [
+        {
+          "name": 304,
+          "children": [
+            {
+              "name": 305,
+              "value": 61
+            },
+            {
+              "name": 306,
+              "value": 176
+            },
+            {
+              "name": 307,
+              "value": 269
+            }
+          ]
+        },
+        {
+          "name": 308,
+          "children": [
+            {
+              "name": 309,
+              "value": 96
+            },
+            {
+              "name": 310,
+              "value": 282
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 311,
+      "children": [
+        {
+          "name": 312,
+          "children": [
+            {
+              "name": 313,
+              "value": 162
+            },
+            {
+              "name": 314,
+              "value": 66
+            },
+            {
+              "name": 315,
+              "value": 229
+            }
+          ]
+        },
+        {
+          "name": 316,
+          "children": [
+            {
+              "name": 317,
+              "value": 271
+            },
+            {
+              "name": 318,
+              "value": 65
+            }
+          ]
+        },
+        {
+          "name": 319,
+          "children": [
+            {
+              "name": 320,
+              "value": 103
+            },
+            {
+              "name": 321,
+              "value": 94
+            }
+          ]
+        },
+        {
+          "name": 322,
+          "children": [
+            {
+              "name": 323,
+              "value": 235
+            },
+            {
+              "name": 324,
+              "value": 122
+            },
+            {
+              "name": 325,
+              "value": 129
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": 326,
+      "children": [
+        {
+          "name": 327,
+          "children": [
+            {
+              "name": 328,
+              "value": 211
+            },
+            {
+              "name": 329,
+              "value": 55
+            }
+          ]
+        },
+        {
+          "name": 330,
+          "children": [
+            {
+              "name": 331,
+              "value": 273
+            },
+            {
+              "name": 332,
+              "value": 70
+            },
+            {
+              "name": 333,
+              "value": 212
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
 }
+
+//function dataGen() {
+  //var i = 100;
+  //function makeId() {
+    ////var text = '';
+    ////var possible = 'abcdefghijklmnopqrstuvwxyz';
+
+    ////for( var i=0; i < 2; i++ )
+      ////text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    ////return text;
+    //return i++;
+  //}
+
+  //function makeLeafs() {
+    //return _.map(
+      //_.range(_.random(2,3)),
+      //function() {
+        //return {
+          //name: makeId(),
+          //value: _.random(20, 300)
+        //};
+      //}
+    //);
+  //}
+
+  //function makeParents() {
+    //return _.map(
+      //_.range(_.random(2,4)),
+      //function() {
+        //return {
+          //name: makeId(),
+          //children: makeLeafs()
+        //};
+      //}
+    //);
+  //}
+
+  //return { name: 'root', children: _.map(
+    //_.range(_.random(12,20)),
+    //function() {
+      //return {
+        //name: makeId(),
+        //children: makeParents()
+      //};
+    //}
+  //)};
+//}
+
 })();
 
 
