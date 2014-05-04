@@ -30,6 +30,10 @@ module.exports = function(grunt){
       build: {
         src: 'build/css/index.css',
         dest: 'build/css/index.css'
+      },
+      logo: {
+        src: 'build/css/logo.css',
+        dest: 'build/css/logo.css'
       }
     },
     uglify: {
@@ -119,7 +123,8 @@ module.exports = function(grunt){
           }
         },
         files: {
-          'build/css/index.css': 'src/css/theme.less'
+          'build/css/index.css': 'src/css/theme.less',
+          'build/css/logo.css': 'src/css/logo.less'
         }
       }
     },
@@ -131,7 +136,8 @@ module.exports = function(grunt){
         eqnull: true,
         browser: true,
         globals: {
-          d3: true
+          d3: true,
+          _: true
         },
       },
       all: ['Gruntfile.js', 'src/js/**/*.js', '!src/js/**/*.min.js']

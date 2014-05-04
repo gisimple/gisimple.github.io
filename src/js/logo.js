@@ -1,122 +1,170 @@
 'use strict';
 
-var n = 4, // number of layers
-    m = 58, // number of samples per layer
-    stack = d3.layout.stack(),
-    layers = stack(d3.range(n).map(function() { return bumpLayer(m, 0.1); })),
-    yGroupMax = d3.max(layers, function(layer) {
-      return d3.max(layer, function(d) { return d.y; });
-    }),
-    yStackMax = d3.max(layers, function(layer) { 
-      return d3.max(layer, function(d) { return d.y0 + d.y; }); 
-    });
+// resize/reload no jQuery
+window.addEventListener('resize', function () {
+  window.location.reload();
+});
 
-var margin = {top: 40, right: 10, bottom: 20, left: 10},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var wid = parseInt(d3.select('body').style('width'), 10),
+    hei = parseInt(d3.select('body').style('height'), 10),
+    shortest = Math.min(wid, hei),
+    tiles = 8,
+    w = Math.floor(shortest / tiles),
+    h = Math.floor(shortest / tiles),
+    wCount = Math.floor(wid/w),
+    hCount = Math.floor(hei/h),
+    color = d3.scale.category20b()
+;
 
-var x = d3.scale.ordinal()
-    .domain(d3.range(m))
-    .rangeRoundBands([0, width], 0.08);
+console.log('w: ' + w);
+console.log('h: ' + h);
 
-var y = d3.scale.linear()
-    .domain([0, yStackMax])
-    .range([height, 0]);
+d3.select('#container')
+  .style('width', w * wCount + 'px')
+  .style('height', h * hCount + 'px')
+  .on('click', click);
+var vis = d3.select('#vis');
+var svg = vis.append('svg')
+          .attr('id', 'svg')
+          .attr('width', w)
+          .attr('height', h)
+          .style('background', 'black');
+var group = svg.append('g');
 
-var color = d3.scale.linear()
-    .domain([0, n - 1])
-    .range(['#aad', '#556']);
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .tickSize(0)
-    .tickPadding(6)
-    .orient('bottom');
-
-var svg = d3.select('body').append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
-  .append('g')
-    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-var layer = svg.selectAll('.layer')
-    .data(layers)
-  .enter().append('g')
-    .attr('class', 'layer')
-    .style('fill', function(d, i) { return color(i); });
-
-var rect = layer.selectAll('rect')
-    .data(function(d) { return d; })
-  .enter().append('rect')
-    .attr('x', function(d) { return x(d.x); })
-    .attr('y', height)
-    .attr('width', x.rangeBand())
-    .attr('height', 0);
-
-rect.transition()
-    .delay(function(d, i) { return i * 10; })
-    .attr('y', function(d) { return y(d.y0 + d.y); })
-    .attr('height', function(d) { return y(d.y0) - y(d.y0 + d.y); });
-
-svg.append('g')
-    .attr('class', 'x axis')
-    .attr('transform', 'translate(0,' + height + ')')
-    .call(xAxis);
-
-d3.selectAll('input').on('change', change);
-
-var timeout = setTimeout(function() {
-  d3.select('input[value=\"grouped\"]').property('checked', true).each(change);
-}, 2000);
-
-function change() {
-  /*jshint validthis:true */
-  clearTimeout(timeout);
-  if (this.value === 'grouped') transitionGrouped();
-  else transitionStacked();
-}
-
-function transitionGrouped() {
-  y.domain([0, yGroupMax]);
-
-  rect.transition()
-      .duration(500)
-      .delay(function(d, i) { return i * 10; })
-      .attr('x', function(d, i, j) { return x(d.x) + x.rangeBand() / n * j; })
-      .attr('width', x.rangeBand() / n)
-    .transition()
-      .attr('y', function(d) { return y(d.y); })
-      .attr('height', function(d) { return height - y(d.y); });
-}
-
-function transitionStacked() {
-  y.domain([0, yStackMax]);
-
-  rect.transition()
-      .duration(500)
-      .delay(function(d, i) { return i * 10; })
-      .attr('y', function(d) { return y(d.y0 + d.y); })
-      .attr('height', function(d) { return y(d.y0) - y(d.y0 + d.y); })
-    .transition()
-      .attr('x', function(d) { return x(d.x); })
-      .attr('width', x.rangeBand());
-}
-
-// Inspired by Lee Byron's test data generator.
-function bumpLayer(n, o) {
-
-  function bump(a) {
-    var x = 1 / (0.1 + Math.random()),
-        y = 2 * Math.random() - 0.5,
-        z = 10 / (0.1 + Math.random());
-    for (var i = 0; i < n; i++) {
-      var w = (i / n - y) * z;
-      a[i] += x * Math.exp(-w * w);
+// setup mirrors
+var mirrors = d3.select('#mirrors').append('g');
+var iX = 0, iY = 0;
+for (iX;iX < hCount; iX++) {
+  for (iY;iY < wCount; iY++) {
+    var mirrorDir = '';
+    if (iY % 2) {
+      if (iX % 2) {
+        mirrorDir = 'mirrorXY';
+      } else {
+        mirrorDir = 'mirrorX';
+      }
+    } else {
+      if (iX % 2)
+        mirrorDir = 'mirrorY';
     }
+    mirrors.append('svg')
+      .attr('id', 'mirror-' + iX + '-' + iY)
+      .attr('class', 'mirror ' + mirrorDir)
+      .append('use').attr('xlink:href', '#svg')
+      ;
   }
-  var a = [], i;
-  for (i = 0; i < n; ++i) a[i] = o + o * Math.random();
-  for (i = 0; i < 5; ++i) bump(a);
-  return a.map(function(d, i) { return {x: i, y: Math.max(0, d)}; });
+  iY = 0;
 }
+d3.selectAll('.mirror').style('width', w);
+d3.selectAll('.mirror').style('height', h);
+
+var xA = d3.scale.linear().range([0,w]);
+var yA = d3.scale.linear().range([h,0]);
+
+var poly = [
+  {'x': 1.0, 'y': 2.0},
+  {'x': 12.0, 'y': 1.0},
+  {'x': 1.0, 'y': 1.0},
+  {'x': 2.0, 'y': 12.0}
+];
+
+var poly2 = [
+  {'x': 1.0, 'y': 2.0},
+  {'x': 12.0, 'y': 1.0},
+  {'x': 2.0, 'y': 12.0}
+];
+
+xA.domain(d3.extent(poly, function(d) {return d.x;}));
+yA.domain(d3.extent(poly, function(d) {return d.y;}));
+
+var line = d3.svg.line()
+  .x(function(d) { return xA(d.x); })
+  .y(function(d) { return yA(d.y); })
+  .interpolate('linear-closed')
+  ;
+
+var path = group
+  .append('path')
+  .data([poly])
+  .attr('stroke', '#eee')
+  .attr('fill', '#fff')
+  //.style('opacity', 0.7)
+  .attr('d', line)
+  //.each(loop)
+;
+
+var path2 = group
+  .append('path')
+  .data([poly2])
+  .attr('stroke', '#ccc')
+  .attr('fill', '#ddd')
+  //.style('opacity', 0.8)
+  .attr('d', line)
+  //.each(loop)
+;
+
+function makePt() {
+  return { 'x': _.random(0,2)*6, 'y': _.random(0,4)*3};
+}
+var toggle = false;
+var msec = 1000;
+var intervalId = 0;
+function click() {
+  /*jshint validthis: true */
+  toggle = (toggle) ? false : true;
+  console.log('click! animate?: ' + toggle);
+  if (!toggle) clearInterval(intervalId);
+  if (toggle) {
+    clearInterval(intervalId);
+    intervalId = setInterval(function() {
+      var c = color(_.random(10));
+      poly.shift();
+      _.map(_.range(_.random(5)), poly.push(makePt()));
+      path.transition()
+        .duration(msec)
+        .attr('fill', c)
+        .attr('stroke', c)
+        .attr('d', line)
+      ;
+
+      var d = color(_.random(20));
+      poly2.shift();
+      _.map(_.range(_.random(5)), poly2.push(makePt()));
+      path2.transition()
+        .delay(msec/2)
+        .duration(msec)
+        .attr('fill', d)
+        .attr('stroke', d)
+        .attr('d', line)
+      ;
+
+    }, msec + 10);
+  }
+}
+
+click();
+
+
+//function loop() {
+  //var path = d3.select(this);
+  //(function repeat() {
+    ////(function waitFor(){
+      ////var timeout = (isLooping) ? 1 : 100;
+      ////setTimeout(function(){
+        ////while(!isLooping)
+          ////waitFor();
+      ////}, timeout);
+    ////})();
+
+    //var first = poly.shift();
+    //poly.push({ 'x': _.random(1,12), 'y': _.random(1,4)*3});
+    //path = path.transition()
+      //.duration(1000)
+      //.attr('d', line)
+      //.each('end', repeat);
+  //})();
+//}
+
+
+
 
